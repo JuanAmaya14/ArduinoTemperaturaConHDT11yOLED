@@ -4,23 +4,23 @@
 #include <Adafruit_Sensor.h>
 #include "DHT.h"
 
-#define OLED_RESET 4
-Adafruit_SSD1306 display(128, 64);
-#define DHTPIN 2
+Adafruit_SSD1306 pantalla(128, 64);
+#define PIN_DHT 2
+#define TIPO_DHT DHT11
 
-#define DHTTYPE DHT11
-
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(PIN_DHT, TIPO_DHT);
 
 float maxTemperatura = -1000;
 float minTemperatura = 1000;
+int desplazamientoX = 0;
+bool moverDerecha = true;
 
 void setup() {
-  display.cp437(true);
+  pantalla.cp437(true);
   dht.begin();
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.clearDisplay();
-  display.setTextColor(SSD1306_WHITE);
+  pantalla.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  pantalla.clearDisplay();
+  pantalla.setTextColor(SSD1306_WHITE);
 }
 
 void loop() {
@@ -30,33 +30,47 @@ void loop() {
     minTemperatura = min(temperatura, minTemperatura);
   }
 
-  display.clearDisplay();
+  pantalla.clearDisplay();
 
-  display.setTextSize(1);
-  display.setCursor(0, 7);
-  display.print("Temperatura: ");
-  display.setTextSize(2);
-  display.setCursor(0, 16);
-  display.print(temperatura);
-  display.print(" ");
-  display.setTextSize(1);
-  display.write(167);
-  display.setTextSize(2);
-  display.print("C");
+  pantalla.setTextSize(1);
+  pantalla.setCursor(desplazamientoX, 7);
+  pantalla.print("Temperatura: ");
+  pantalla.setTextSize(2);
+  pantalla.setCursor(desplazamientoX, 16);
+  pantalla.print(temperatura);
+  pantalla.print(" ");
+  pantalla.setTextSize(1);
+  pantalla.write(167);
+  pantalla.setTextSize(2);
+  pantalla.print("C");
 
-  display.setTextSize(1);
-  display.setCursor(0, 40);
-  display.print("Max Temp: ");
-  display.print(maxTemperatura);
-  display.print(" ");
-  display.write(167);
-  display.print("C");
-  display.setCursor(0, 50);
-  display.print("Min Temp: ");
-  display.print(minTemperatura);
-  display.print(" ");
-  display.write(167);
-  display.print("C");
+  pantalla.setTextSize(1);
+  pantalla.setCursor(desplazamientoX, 40);
+  pantalla.print("Max Temp: ");
+  pantalla.print(maxTemperatura);
+  pantalla.print(" ");
+  pantalla.write(167);
+  pantalla.print("C");
+  pantalla.setCursor(desplazamientoX, 50);
+  pantalla.print("Min Temp: ");
+  pantalla.print(minTemperatura);
+  pantalla.print(" ");
+  pantalla.write(167);
+  pantalla.print("C");
 
-  display.display();
+  pantalla.display();
+
+  if (moverDerecha) {
+    desplazamientoX++;
+    if (desplazamientoX >= 22) {
+      moverDerecha = false;
+    }
+  } else {
+    desplazamientoX--;
+    if (desplazamientoX <= -2) {
+      moverDerecha = true;
+    }
+  }
+
+  delay(50);
 }
